@@ -32,9 +32,17 @@ def push(text):
     )
 
 # --- Tool functions ---
-def record_user_details(email, name="Name not provided", notes="not provided"):
-    push(f"📩 Recruiter info: {name} ({email}) | {notes}")
-    return {"✅ Recruiter recorded": f"{name} ({email})"}
+def record_user_details(email, name, notes=""):
+    record = {
+        "name": name,
+        "email": email,
+        "notes": notes,
+    }
+
+    with open("recruiters.jsonl", "a") as f:
+        f.write(json.dumps(record) + "\n")
+
+    push(f"📩 New recruiter lead: {name} ({email})\nNotes: {notes}")
 
 def record_unknown_question(question):
     push(f"🤔 Unknown recruiter question: {question}")
@@ -146,7 +154,8 @@ You are answering questions from recruiters on {self.name}'s website.
 
 # --- Gradio Recruiter Info Form ---
 def recruiter_form(name, email, notes):
-    return record_user_details(email=email, name=name, notes=notes)
+    record_user_details(email=email, name=name, notes=notes)
+    return f"✅ Thanks {name}, your details have been recorded! I'll follow up with you soon."
 
 # --- Launch Gradio app ---
 if __name__ == "__main__":
@@ -171,7 +180,7 @@ if __name__ == "__main__":
             gr.Textbox(label="Your Email"),
             gr.Textbox(label="Position / Notes (optional)"),
         ],
-        outputs="json",
+        outputs="text",
         title="📩 Share your details",
         description="Leave your contact info if you'd like me to follow up.",
     )
