@@ -32,23 +32,31 @@ def push(text):
     )
 
 # --- Tool functions ---
-def record_user_details(email, name="Name not provided", notes="not provided"):
-    push(f"Recording {name} with email {email} and notes {notes}")
-    return {"recorded": "ok"}
+def record_user_details(email, name, notes=""):
+    record = {
+        "name": name,
+        "email": email,
+        "notes": notes,
+    }
+
+    with open("recruiters.jsonl", "a") as f:
+        f.write(json.dumps(record) + "\n")
+
+    push(f"📩 New recruiter lead: {name} ({email})\nNotes: {notes}")
 
 def record_unknown_question(question):
-    push(f"Recording {question}")
+    push(f"🤔 Unknown recruiter question: {question}")
     return {"recorded": "ok"}
 
 record_user_details_json = {
     "name": "record_user_details",
-    "description": "Use this tool to record a user email and details",
+    "description": "Record recruiter contact details (email, name, notes).",
     "parameters": {
         "type": "object",
         "properties": {
-            "email": {"type": "string", "description": "The email address of this user"},
-            "name": {"type": "string", "description": "The user's name"},
-            "notes": {"type": "string", "description": "Additional context"},
+            "email": {"type": "string", "description": "Recruiter's email address"},
+            "name": {"type": "string", "description": "Recruiter's name"},
+            "notes": {"type": "string", "description": "Additional context or position details"},
         },
         "required": ["email"],
         "additionalProperties": False,
@@ -57,11 +65,11 @@ record_user_details_json = {
 
 record_unknown_question_json = {
     "name": "record_unknown_question",
-    "description": "Record any unanswered question",
+    "description": "Record any recruiter question not answered by CV/summary.",
     "parameters": {
         "type": "object",
         "properties": {
-            "question": {"type": "string", "description": "The unanswered question"},
+            "question": {"type": "string", "description": "Unanswered recruiter question"},
         },
         "required": ["question"],
         "additionalProperties": False,
@@ -97,7 +105,7 @@ class Me:
         for tool_call in tool_calls:
             tool_name = tool_call.function.name
             arguments = json.loads(tool_call.function.arguments)
-            print(f"Tool called: {tool_name}", flush=True)
+            print(f"⚙️ Tool called: {tool_name}", flush=True)
             tool = globals().get(tool_name)
             result = tool(**arguments) if tool else {}
             results.append(
@@ -106,14 +114,24 @@ class Me:
         return results
 
     def system_prompt(self):
-        system_prompt = f"You are acting as {self.name}. You are answering questions on {self.name}'s website, \
-particularly about {self.name}'s career, background, skills and experience. \
-Be professional and engaging. \
-If you don't know the answer, use record_unknown_question. \
-If the user is engaging in discussion, steer them towards sharing their email and record it."
+        system_prompt = f"""
+You are acting as {self.name}, a professional software engineer.
+You are answering questions from recruiters on {self.name}'s website.
 
-        system_prompt += f"\n\n## Summary:\n{self.summary}\n\n## CV Profile:\n{self.cv}\n\n"
-        return system_prompt
+🎯 Goals:
+- Present {self.name}'s career, technical skills, and experience clearly.
+- Be professional, concise, and engaging.
+- If a recruiter shares contact info, record it with `record_user_details`.
+- If you don’t know an answer, use `record_unknown_question`.
+
+📌 Context for recruiter:
+## Summary:
+{self.summary}
+
+## CV Profile:
+{self.cv}
+"""
+        return system_prompt.strip()
 
     def chat(self, message, history):
         messages = [{"role": "system", "content": self.system_prompt()}] + history + [
@@ -134,10 +152,39 @@ If the user is engaging in discussion, steer them towards sharing their email an
                 done = True
         return response.choices[0].message.content
 
+# --- Gradio Recruiter Info Form ---
+def recruiter_form(name, email, notes):
+    record_user_details(email=email, name=name, notes=notes)
+    return f"✅ Thanks {name}, your details have been recorded! I'll follow up with you soon."
 
 # --- Launch Gradio app ---
 if __name__ == "__main__":
     me = Me()
-    # ✅ Local: runs at localhost:7860, HuggingFace: auto-detects
-    gr.ChatInterface(me.chat, type="messages").launch()
-    
+
+    chat = gr.ChatInterface(
+        fn=me.chat,
+        type="messages",
+        title="💼 Chat with Muhammad Lutfi Ibrahim",
+        description="Ask me about my career, technical skills, and experience.",
+        examples=[
+            ["Can you tell me about your background?"],
+            ["What technical skills are you strongest in?"],
+            ["Are you open to remote work?"],
+        ],
+    )
+
+    form = gr.Interface(
+        fn=recruiter_form,
+        inputs=[
+            gr.Textbox(label="Your Name"),
+            gr.Textbox(label="Your Email"),
+            gr.Textbox(label="Position / Notes (optional)"),
+        ],
+        outputs="text",
+        title="📩 Share your details",
+        description="Leave your contact info if you'd like me to follow up.",
+    )
+
+    # Tab layout: Chat + Lead Form
+    demo = gr.TabbedInterface([chat, form], ["🤖 Chat", "📩 Leave Info"])
+    demo.launch()
