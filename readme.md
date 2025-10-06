@@ -12,9 +12,10 @@ An intelligent AI chatbot that acts as Muhammad Lutfi Ibrahim's digital represen
 
 - **AI-Powered Chat Interface**: Built with Gradio for an intuitive web-based chat experience
 - **CV Integration**: Automatically loads and processes CV from PDF format
-- **Smart Tool Calling**: Uses OpenAI function calling to:
+- **Smart Tool Calling**: Uses AI function calling to:
   - Record user contact details when they're interested in connecting
   - Track unanswered questions for continuous improvement
+- **AI Provider Fallback**: Automatically falls back from OpenAI to DeepSeek if needed
 - **Pushover Notifications**: Sends real-time notifications about user interactions
 - **Professional Representation**: Maintains professional tone while engaging potential clients/employers
 
@@ -22,7 +23,8 @@ An intelligent AI chatbot that acts as Muhammad Lutfi Ibrahim's digital represen
 
 - **Backend**: Python with OpenAI API
 - **Frontend**: Gradio web interface
-- **AI Model**: GPT-4o-mini with function calling
+- **AI Models**: GPT-4o-mini (OpenAI) with automatic fallback to DeepSeek
+- **Function Calling**: Supported by both OpenAI and DeepSeek
 - **PDF Processing**: PyPDF for CV extraction
 - **Notifications**: Pushover API integration
 - **Environment**: Python-dotenv for configuration
@@ -41,10 +43,18 @@ An intelligent AI chatbot that acts as Muhammad Lutfi Ibrahim's digital represen
 2. **Set Up Environment Variables**:
    Create a `.env` file in the project root with:
    ```env
+   # Primary: OpenAI API Key
    OPENAI_API_KEY=your_openai_api_key_here
+   
+   # Fallback: DeepSeek API Key (FREE alternative to OpenAI!)
+   DEEPSEEK_API_KEY=your_deepseek_api_key_here
+   
+   # Optional: Pushover notifications
    PUSHOVER_TOKEN=your_pushover_token
    PUSHOVER_USER=your_pushover_user
    ```
+   
+   **🔥 You only need ONE of OpenAI or DeepSeek keys!** The app automatically falls back to DeepSeek if OpenAI fails.
 
 3. **Run the Application**:
    ```bash
