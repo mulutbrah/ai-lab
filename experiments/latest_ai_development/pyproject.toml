@@ -1,19 +1,22 @@
 [project]
-name = "latest_ai_development"
+name = "topic_report"
 version = "0.1.0"
-description = "latest-ai-development using crewAI"
+description = "topic-report using crewAI"
 authors = [{ name = "Your Name", email = "you@example.com" }]
 requires-python = ">=3.10,<3.14"
 dependencies = [
     "crewai[tools]>=0.165.1,<1.0.0"
 ]
 
+[tool.hatch.build.targets.wheel]
+packages = ["src/topic_report"]
+
 [project.scripts]
-latest_ai_development = "latest_ai_development.main:run"
-run_crew = "latest_ai_development.main:run"
-train = "latest_ai_development.main:train"
-replay = "latest_ai_development.main:replay"
-test = "latest_ai_development.main:test"
+latest_ai_development = "topic_report.main:run"
+run_crew = "topic_report.main:run"
+train = "topic_report.main:train"
+replay = "topic_report.main:replay"
+test = "topic_report.main:test"
 
 [build-system]
 requires = ["hatchling"]

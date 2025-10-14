@@ -1,0 +1,70 @@
+research_task:
+  description: >
+    Conduct a thorough research about {topic}
+    Make sure you find any interesting and relevant information given
+    the current year is {current_year}.
+  expected_output: >
+    A list with 10 bullet points of the most relevant information about {topic}
+  agent: researcher
+
+reporting_task:
+  description: >
+    Review the context you got and expand each topic into a full section for a report.
+    Make sure the report is detailed and contains any and all relevant information.
+  expected_output: >
+    A fully fledged report with the main topics, each with a full section of information.
+    Formatted as markdown without '```'
+  agent: reporting_analyst
+  output_file: report.md
+
+quality_check_task:
+  description: >
+    Review the final report for accuracy, completeness, and quality. Check for any
+    factual errors, missing information, or areas that need improvement. Ensure
+    the report meets high standards and is ready for publication.
+  expected_output: >
+    A quality assessment report with recommendations for improvements, plus
+    a final polished version of the report with any necessary corrections.
+  agent: quality_reviewer
+  output_file: quality_review.md
+
+research_critique_task:
+  description: >
+    Critically analyze the research findings from the previous research task.
+    Identify any gaps, biases, missing perspectives, or areas that need deeper
+    investigation. Provide constructive feedback on the research methodology
+    and suggest specific improvements. This critique will inform the next
+    reporting task to ensure higher quality output.
+  expected_output: >
+    A detailed critique report highlighting strengths, weaknesses, gaps, and
+    specific recommendations for improving the research. Include actionable
+    suggestions that can be incorporated into the reporting phase.
+  agent: critique_agent
+  output_file: research_critique.md
+
+research_refinement_task:
+  description: >
+    Based on the research critique feedback, refine and improve the original
+    research findings. Address the gaps and weaknesses identified in the critique.
+    Expand on areas that need more depth and incorporate the suggested improvements.
+    This refined research will be used for the reporting task.
+  expected_output: >
+    An improved and refined research report that addresses all critique feedback.
+    Include additional findings, corrected information, and enhanced analysis
+    based on the critique recommendations.
+  agent: researcher
+  output_file: refined_research.md
+
+report_critique_task:
+  description: >
+    Critically evaluate the reporting analyst's work. Assess the clarity, structure,
+    logical flow, and completeness of the report. Consider the research critique
+    feedback and check if the reporting addressed those concerns. Identify areas
+    where the analysis could be stronger or more comprehensive. Provide specific
+    suggestions for improvement that can be incorporated into the final quality check.
+  expected_output: >
+    A comprehensive critique of the report with specific recommendations for
+    improving structure, content, and presentation quality. Include actionable
+    feedback that considers both the original research and previous critique.
+  agent: critique_agent
+  output_file: report_critique.md

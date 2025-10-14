@@ -7,8 +7,8 @@ from typing import List
 # https://docs.crewai.com/concepts/crews#example-crew-class-with-decorators
 
 @CrewBase
-class LatestAiDevelopment():
-    """LatestAiDevelopment crew"""
+class TopicReporting():
+    """Topic Reporting crew"""
 
     agents: List[BaseAgent]
     tasks: List[Task]
@@ -35,6 +35,22 @@ class LatestAiDevelopment():
             output_file='output/report_reporting_analyst.md'
         )
 
+    @agent
+    def quality_reviewer(self) -> Agent:
+        return Agent(
+            config=self.agents_config['quality_reviewer'], # type: ignore[index]
+            verbose=True,
+            output_file='output/report_quality_reviewer.md'
+        )
+
+    @agent
+    def critique_agent(self) -> Agent:
+        return Agent(
+            config=self.agents_config['critique_agent'], # type: ignore[index]
+            verbose=True,
+            output_file='output/report_critique_agent.md'
+        )
+
     # To learn more about structured task outputs,
     # task dependencies, and task callbacks, check out the documentation:
     # https://docs.crewai.com/concepts/tasks#overview-of-a-task
@@ -45,10 +61,38 @@ class LatestAiDevelopment():
         )
 
     @task
+    def research_critique_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['research_critique_task'], # type: ignore[index]
+            output_file='output/report_research_critique.md'
+        )
+
+    @task
+    def research_refinement_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['research_refinement_task'], # type: ignore[index]
+            output_file='output/refined_research.md'
+        )
+
+    @task
     def reporting_task(self) -> Task:
         return Task(
             config=self.tasks_config['reporting_task'], # type: ignore[index]
             output_file='output/report_reporting_task.md'
+        )
+
+    @task
+    def report_critique_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['report_critique_task'], # type: ignore[index]
+            output_file='output/report_critique.md'
+        )
+
+    @task
+    def quality_check_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['quality_check_task'], # type: ignore[index]
+            output_file='output/report_quality_check.md'
         )
 
     @crew
